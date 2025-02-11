@@ -8,8 +8,8 @@ import (
 
 type Transaction struct {
 	ID         uuid.UUID `json:"id"`
-	FromUserID uint      `json:"from_user_id"`
-	ToUserID   uint      `json:"to_user_id"`
+	FromUserID uuid.UUID `json:"from_user_id"`
+	ToUserID   uuid.UUID `json:"to_user_id"`
 	Amount     int       `json:"amount"`
 	CreatedAt  time.Time
 }
