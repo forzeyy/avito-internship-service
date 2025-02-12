@@ -12,7 +12,7 @@ COPY . .
 # Строим бинарник приложения
 RUN go build -o /app/bin/app ./cmd/avito/main.go
 
-# Устанавливаем sql-migrate (вместо установки в финальном контейнере, установим здесь)
+# Устанавливаем sql-migrate
 RUN go install github.com/rubenv/sql-migrate/...@latest
 
 # Stage 2: Final Image
@@ -33,9 +33,12 @@ COPY migrations/ /app/migrations/
 COPY migrate.yaml /app/migrate.yaml
 COPY entrypoint.sh /app/entrypoint.sh
 
-# Убедимся, что sql-migrate доступен в final контейнере
+# Делаем entrypoint.sh исполняемым
+RUN chmod +x /app/entrypoint.sh
+
+# Убедимся, что sql-migrate доступен в финальном контейнере
 COPY --from=builder /go/bin/sql-migrate /usr/local/bin/sql-migrate
 
 # Указываем точку входа и команду
 ENTRYPOINT ["/app/entrypoint.sh"]
-CMD ["./bin/app"]
+CMD ["/app/bin/app"]

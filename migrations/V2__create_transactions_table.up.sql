@@ -1,5 +1,5 @@
 -- +migrate Up
-CREATE TABLE transactions (
+CREATE TABLE IF NOT EXISTS transactions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     from_user_id UUID REFERENCES users(id),
     to_user_id UUID REFERENCES users(id),
@@ -7,5 +7,5 @@ CREATE TABLE transactions (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_transactions_from_user_id ON transactions(from_user_id);
-CREATE INDEX idx_transactions_to_user_id ON transactions(to_user_id);
+CREATE INDEX IF NOT EXISTS idx_transactions_from_user_id ON transactions(from_user_id);
+CREATE INDEX IF NOT EXISTS idx_transactions_to_user_id ON transactions(to_user_id);

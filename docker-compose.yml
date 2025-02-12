@@ -9,8 +9,12 @@ services:
       - db
     env_file:
       - ./cmd/avito/.env
+    volumes:
+      - ./cmd/avito/.env:/app/.env
     restart: on-failure
-    command: ["./wait-for-it.sh", "db:5432", "--", "go", "run", "cmd/main.go"]
+    entrypoint: ["/app/entrypoint.sh"]
+    command: ["./wait-for-it.sh", "db:5432", "--", "/app/bin/app"]
+
 
   db:
     image: postgres:17-alpine

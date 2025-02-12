@@ -1,2 +1,2 @@
 cmd/avito/.env
-migrations/migrations.toml
+migrations/migrations.yaml

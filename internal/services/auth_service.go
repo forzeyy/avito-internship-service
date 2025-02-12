@@ -8,7 +8,6 @@ import (
 	"github.com/forzeyy/avito-internship-service/internal/models"
 	"github.com/forzeyy/avito-internship-service/internal/repositories"
 	"github.com/forzeyy/avito-internship-service/internal/utils"
-	"github.com/google/uuid"
 )
 
 type AuthService struct {
@@ -53,10 +52,8 @@ func (s *AuthService) Register(ctx context.Context, username, password string) e
 	}
 
 	user := &models.User{
-		ID:           uuid.New(),
 		Username:     username,
 		PasswordHash: string(hashedPassword),
-		Coins:        1000,
 	}
 
 	return s.userRepo.CreateUser(ctx, user)

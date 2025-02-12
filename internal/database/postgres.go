@@ -16,16 +16,16 @@ type DB struct {
 func ConnectDatabase(dsn string) (*DB, error) {
 	cfg, err := pgxpool.ParseConfig(dsn)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse db config. error: %v", err)
+		return nil, fmt.Errorf("не удалось спарсить конфиг базы данных: %v", err)
 	}
 
 	pool, err := pgxpool.NewWithConfig(context.Background(), cfg)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create db pool. error: %v", err)
+		return nil, fmt.Errorf("не удалось создать пул базы данных: %v", err)
 	}
 
 	if err := pool.Ping(context.Background()); err != nil {
-		return nil, fmt.Errorf("failed to connect to db: %v", err)
+		return nil, fmt.Errorf("не удалось подключиться к базе данных: %v", err)
 	}
 
 	return &DB{pool: pool}, nil
