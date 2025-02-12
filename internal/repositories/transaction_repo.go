@@ -24,7 +24,7 @@ func (r *TransactionRepository) CreateTransaction(ctx context.Context, fromUserI
 	`
 	_, err := r.db.Exec(ctx, query, fromUserID, toUserID, amount)
 	if err != nil {
-		return fmt.Errorf("failed to create transaction. error: %v", err)
+		return fmt.Errorf("ошибка при создании транзакции: %v", err)
 	}
 	return nil
 }
@@ -40,20 +40,20 @@ func (r *TransactionRepository) GetTransactionsByUserID(ctx context.Context, use
 
 	rows, err := r.db.Query(ctx, query, userID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get transactions. error: %v", err)
+		return nil, fmt.Errorf("ошибка при получении транзакций: %v", err)
 	}
 	defer rows.Close()
 
 	for rows.Next() {
 		var tr models.Transaction
 		if err := rows.Scan(&tr.ID, &tr.FromUserID, &tr.ToUserID, &tr.Amount, &tr.CreatedAt); err != nil {
-			return nil, fmt.Errorf("failed to scan transaction. error: %v", err)
+			return nil, fmt.Errorf("ошибка при скане транзакции: %v", err)
 		}
 		transactions = append(transactions, tr)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("transactions scanning error: %v", err)
+		return nil, fmt.Errorf("ошибка при скане транзакций: %v", err)
 	}
 
 	return transactions, nil

@@ -24,10 +24,10 @@ func (r *MerchRepository) GetItemPrice(ctx context.Context, itemName string) (in
 	row := r.db.QueryRow(ctx, query, itemName)
 	err := row.Scan(&price)
 	if err == pgx.ErrNoRows {
-		return 0, errors.New("item not found")
+		return 0, errors.New("мерч не найден")
 	}
 	if err != nil {
-		return 0, fmt.Errorf("failed to get price. error: %v", err)
+		return 0, fmt.Errorf("ошибка при получении цены: %v", err)
 	}
 
 	return price, nil

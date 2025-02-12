@@ -24,7 +24,7 @@ func (r *PurchaseRepository) CreatePurchase(ctx context.Context, userID uuid.UUI
 	`
 	_, err := r.db.Exec(ctx, query, userID, itemName, quantity)
 	if err != nil {
-		return fmt.Errorf("failed to create purchase. error: %v", err)
+		return fmt.Errorf("ошибка при создании покупки: %v", err)
 	}
 	return nil
 }
@@ -40,20 +40,20 @@ func (r *PurchaseRepository) GetPurchasesByUserID(ctx context.Context, userID uu
 
 	rows, err := r.db.Query(ctx, query, userID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get purchases. error: %v", err)
+		return nil, fmt.Errorf("ошибка при получении покупок: %v", err)
 	}
 
 	defer rows.Close()
 	for rows.Next() {
 		var p models.Purchase
 		if err := rows.Scan(&p.ID, &p.UserID, &p.ItemName, &p.Quantity, &p.CreatedAt); err != nil {
-			return nil, fmt.Errorf("failed to scan purchase. error: %v", err)
+			return nil, fmt.Errorf("ошибка при скане покупки: %v", err)
 		}
 		purchases = append(purchases, p)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("purchase scanning failed. error: %v", err)
+		return nil, fmt.Errorf("ошибка при скане покупок: %v", err)
 	}
 
 	return purchases, nil

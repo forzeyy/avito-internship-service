@@ -29,10 +29,10 @@ func (r *UserRepository) GetUserByID(ctx context.Context, id uuid.UUID) (*models
 
 	err := row.Scan(&user.ID, &user.Username, &user.Coins)
 	if err == pgx.ErrNoRows {
-		return nil, errors.New("user not found")
+		return nil, errors.New("пользователь не найден")
 	}
 	if err != nil {
-		return nil, fmt.Errorf("failed to get user. error: %v", err)
+		return nil, fmt.Errorf("ошибка при получении пользователя: %v", err)
 	}
 
 	return &user, nil
@@ -46,10 +46,10 @@ func (r *UserRepository) GetUserByUsername(ctx context.Context, username string)
 
 	err := row.Scan(&user.ID, &user.Username, &user.Coins)
 	if err == pgx.ErrNoRows {
-		return nil, errors.New("user not found")
+		return nil, errors.New("пользователь не найден")
 	}
 	if err != nil {
-		return nil, fmt.Errorf("failed to get user. error: %v", err)
+		return nil, fmt.Errorf("ошибка при получении пользователя: %v", err)
 	}
 
 	return &user, nil
@@ -59,7 +59,7 @@ func (r *UserRepository) CreateUser(ctx context.Context, user *models.User) erro
 	query := `INSERT INTO users (id, username, password_hash, coins) VALUES ($1, $2, $3, $4)`
 	_, err := r.db.Exec(ctx, query, user.ID, user.Username, user.PasswordHash, user.Coins)
 	if err != nil {
-		return fmt.Errorf("failed to create user. error: %v", err)
+		return fmt.Errorf("ошибка при создании пользователя: %v", err)
 	}
 	return nil
 }
@@ -68,11 +68,11 @@ func (r *UserRepository) UpdateUserBalance(ctx context.Context, userID uuid.UUID
 	query := `UPDATE users SET coins = coins + $1 WHERE id = $2`
 	tag, err := r.db.Exec(ctx, query, amount, userID)
 	if err != nil {
-		return fmt.Errorf("failed to update user balance. error: %v", err)
+		return fmt.Errorf("ошибка при обновлении баланса пользователя: %v", err)
 	}
 
 	if tag.RowsAffected() == 0 {
-		return errors.New("user not found")
+		return errors.New("пользователь не найден")
 	}
 
 	return nil
