@@ -22,13 +22,13 @@ func NewTransactionService(transactionRepo repositories.TransactionRepository, u
 	}
 }
 
-func (s *TransactionService) SendCoins(ctx context.Context, fromUserID, toUserID uuid.UUID, amount int) error {
+func (s *TransactionService) SendCoins(ctx context.Context, fromUserID uuid.UUID, toUsername string, amount int) error {
 	fromUser, err := s.userRepo.GetUserByID(ctx, fromUserID)
 	if err != nil {
 		return errors.New("отправитель не найден")
 	}
 
-	_, err = s.userRepo.GetUserByID(ctx, toUserID)
+	toUser, err := s.userRepo.GetUserByUsername(ctx, toUsername)
 	if err != nil {
 		return errors.New("получатель не найден")
 	}
@@ -37,14 +37,14 @@ func (s *TransactionService) SendCoins(ctx context.Context, fromUserID, toUserID
 		return errors.New("недостаточно монет")
 	}
 
-	if err := s.transactionRepo.CreateTransaction(ctx, fromUserID, toUserID, amount); err != nil {
+	if err := s.transactionRepo.CreateTransaction(ctx, fromUserID, toUser.ID, toUsername, fromUser.Username, amount); err != nil {
 		return fmt.Errorf("ошибка при создании транзакции: %v", err)
 	}
 
 	if err := s.userRepo.UpdateUserBalance(ctx, fromUserID, -amount); err != nil {
 		return fmt.Errorf("ошибка при обновлении баланса отправителя: %v", err)
 	}
-	if err := s.userRepo.UpdateUserBalance(ctx, toUserID, amount); err != nil {
+	if err := s.userRepo.UpdateUserBalance(ctx, toUser.ID, amount); err != nil {
 		return fmt.Errorf("ошибка при обновлении баланса получателя: %v", err)
 	}
 

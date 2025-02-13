@@ -34,7 +34,6 @@ func (r *UserRepositoryImpl) GetUserByID(ctx context.Context, id uuid.UUID) (*mo
 
 	query := `SELECT id, username, coins FROM users WHERE id = $1`
 	row := r.db.QueryRow(ctx, query, id)
-
 	err := row.Scan(&user.ID, &user.Username, &user.Coins)
 	if err == pgx.ErrNoRows {
 		return nil, errors.New("пользователь не найден")

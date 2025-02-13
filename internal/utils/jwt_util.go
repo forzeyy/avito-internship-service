@@ -63,10 +63,11 @@ func GetUserIDFromContext(c echo.Context) (uuid.UUID, error) {
 	}
 
 	claims := token.Claims.(jwt.MapClaims)
-	userID, ok := claims["user_id"].(uuid.UUID)
+	userID, ok := claims["user_id"].(string)
+	userUUID, _ := uuid.Parse(userID)
 	if !ok {
 		return uuid.Nil, echo.NewHTTPError(http.StatusUnauthorized, "Неавторизован.")
 	}
 
-	return userID, nil
+	return userUUID, nil
 }

@@ -42,14 +42,14 @@ func (h *InfoHandler) GetInfo(c echo.Context) error {
 	received := make([]models.TransactionHistoryItem, 0)
 	sent := make([]models.TransactionHistoryItem, 0)
 	for _, tr := range transactions {
-		if tr.FromUserID == userID {
+		if tr.FromUserID == user.ID {
 			sent = append(sent, models.TransactionHistoryItem{
-				ToUser: tr.ToUserID.String(),
+				ToUser: tr.ToUser,
 				Amount: tr.Amount,
 			})
 		} else {
 			received = append(received, models.TransactionHistoryItem{
-				FromUser: tr.FromUserID.String(),
+				FromUser: tr.FromUser,
 				Amount:   tr.Amount,
 			})
 		}
@@ -71,8 +71,8 @@ func (h *InfoHandler) GetInfo(c echo.Context) error {
 		Coins:     user.Coins,
 		Inventory: []models.InventoryItem{},
 		CoinHistory: models.CoinHistory{
-			Received: received,
 			Sent:     sent,
+			Received: received,
 		},
 	}
 

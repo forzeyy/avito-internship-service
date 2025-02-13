@@ -6,7 +6,6 @@ import (
 	"github.com/forzeyy/avito-internship-service/internal/models"
 	"github.com/forzeyy/avito-internship-service/internal/services"
 	"github.com/forzeyy/avito-internship-service/internal/utils"
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
@@ -29,14 +28,8 @@ func (h *SendCoinHandler) SendCoins(c echo.Context) error {
 	}
 
 	fromUserID, _ := utils.GetUserIDFromContext(c)
-	toUserID, err := uuid.Parse(req.ToUser)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, echo.Map{
-			"error": "Неверный ID получателя.",
-		})
-	}
 
-	err = h.transactionSvc.SendCoins(c.Request().Context(), fromUserID, toUserID, req.Amount)
+	err := h.transactionSvc.SendCoins(c.Request().Context(), fromUserID, req.ToUser, req.Amount)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{
 			"error": err.Error(),
