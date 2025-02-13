@@ -5,6 +5,7 @@ import (
 
 	"github.com/forzeyy/avito-internship-service/internal/models"
 	"github.com/forzeyy/avito-internship-service/internal/services"
+	"github.com/forzeyy/avito-internship-service/internal/utils"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
@@ -27,7 +28,7 @@ func (h *SendCoinHandler) SendCoins(c echo.Context) error {
 		})
 	}
 
-	fromUserID := c.Get("user_id").(uuid.UUID)
+	fromUserID, _ := utils.GetUserIDFromContext(c)
 	toUserID, err := uuid.Parse(req.ToUser)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{

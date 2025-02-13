@@ -5,7 +5,7 @@ import (
 
 	"github.com/forzeyy/avito-internship-service/internal/models"
 	"github.com/forzeyy/avito-internship-service/internal/services"
-	"github.com/google/uuid"
+	"github.com/forzeyy/avito-internship-service/internal/utils"
 	"github.com/labstack/echo/v4"
 )
 
@@ -24,7 +24,7 @@ func NewInfoHandler(userSvc services.UserService, transactionSvc services.Transa
 }
 
 func (h *InfoHandler) GetInfo(c echo.Context) error {
-	userID := c.Get("user_id").(uuid.UUID)
+	userID, _ := utils.GetUserIDFromContext(c)
 	user, err := h.userSvc.GetUserByID(c.Request().Context(), userID)
 	if err != nil {
 		return c.JSON(http.StatusNotFound, echo.Map{

@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/forzeyy/avito-internship-service/internal/services"
-	"github.com/google/uuid"
+	"github.com/forzeyy/avito-internship-service/internal/utils"
 	"github.com/labstack/echo/v4"
 )
 
@@ -26,7 +26,7 @@ func (h *BuyHandler) BuyItem(c echo.Context) error {
 		})
 	}
 
-	userID := c.Get("user_id").(uuid.UUID)
+	userID, _ := utils.GetUserIDFromContext(c)
 
 	err := h.purchaseSvc.BuyItem(c.Request().Context(), userID, itemName)
 	if err != nil {

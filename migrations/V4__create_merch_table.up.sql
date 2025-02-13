@@ -1,10 +1,10 @@
 -- +migrate Up
-CREATE TABLE merchandise (
+CREATE TABLE merch (
     name VARCHAR(255) PRIMARY KEY,
     price INTEGER NOT NULL CHECK (price > 0)
 );
 
-INSERT INTO merchandise (name, price) VALUES
+INSERT INTO merch (name, price) VALUES
 ('t-shirt', 80),
 ('cup', 20),
 ('book', 50),

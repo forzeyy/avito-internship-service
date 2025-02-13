@@ -9,6 +9,7 @@ import (
 	"github.com/forzeyy/avito-internship-service/internal/middleware"
 	"github.com/forzeyy/avito-internship-service/internal/repositories"
 	"github.com/forzeyy/avito-internship-service/internal/services"
+	"github.com/forzeyy/avito-internship-service/internal/utils"
 	"github.com/labstack/echo/v4"
 )
 
@@ -32,10 +33,10 @@ func Run(cfg *config.Config) error {
 	merchRepo := repositories.NewMerchRepository(dbConn)
 
 	// services
-	authService := services.NewAuthService(*userRepo, cfg.JWTSecret)
-	userService := services.NewUserService(*userRepo)
-	transactionService := services.NewTransactionService(*transactionRepo, *userRepo)
-	purchaseService := services.NewPurchaseService(*purchaseRepo, *merchRepo, *userRepo)
+	authService := services.NewAuthService(userRepo, cfg.JWTSecret, utils.DefaultAuthUtils{})
+	userService := services.NewUserService(userRepo)
+	transactionService := services.NewTransactionService(*transactionRepo, userRepo)
+	purchaseService := services.NewPurchaseService(*purchaseRepo, *merchRepo, userRepo)
 
 	// handlers
 	authHandler := handlers.NewAuthHandler(*authService, *userService)
@@ -48,7 +49,7 @@ func Run(cfg *config.Config) error {
 
 	// protected routes
 	protected := e.Group("")
-	protected.Use(middleware.JWTMiddleware())
+	protected.Use(middleware.JWTMiddleware(cfg.JWTSecret))
 	protected.GET("/api/info", infoHandler.GetInfo)
 	protected.POST("/api/sendCoin", sendCoinHandler.SendCoins)
 	protected.GET("/api/buy/:item", buyHandler.BuyItem)

@@ -33,25 +33,21 @@ func (h *AuthHandler) Auth(c echo.Context) error {
 		return c.JSON(http.StatusOK, models.AuthResponse{Token: token})
 	}
 
-	if err.Error() == "неверные учетные данные" {
-		existingUser, _ := h.userSvc.GetUserByUsername(c.Request().Context(), req.Username)
-		if existingUser == nil {
-			err := h.authSvc.Register(c.Request().Context(), req.Username, req.Password)
-			if err != nil {
-				return c.JSON(http.StatusInternalServerError, echo.Map{
-					"error": "Ошибка регистрации пользователя.",
-				})
-			}
-
-			token, err := h.authSvc.Authenticate(c.Request().Context(), req.Username, req.Password)
-			if err != nil {
-				return c.JSON(http.StatusInternalServerError, echo.Map{
-					"error": "Ошибка при выдаче токена.",
-				})
-			}
-
-			return c.JSON(http.StatusOK, models.AuthResponse{Token: token})
+	if err.Error() == "пользователь не найден" {
+		if regErr := h.authSvc.Register(c.Request().Context(), req.Username, req.Password); regErr != nil {
+			return c.JSON(http.StatusInternalServerError, echo.Map{
+				"error": "Ошибка регистрации пользователя.",
+			})
 		}
+
+		token, authErr := h.authSvc.Authenticate(c.Request().Context(), req.Username, req.Password)
+		if authErr != nil {
+			return c.JSON(http.StatusInternalServerError, echo.Map{
+				"error": authErr,
+			})
+		}
+
+		return c.JSON(http.StatusOK, models.AuthResponse{Token: token})
 	}
 
 	return c.JSON(http.StatusUnauthorized, echo.Map{
