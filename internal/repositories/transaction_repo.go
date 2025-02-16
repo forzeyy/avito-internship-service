@@ -10,15 +10,20 @@ import (
 	"github.com/google/uuid"
 )
 
-type TransactionRepository struct {
+type TransactionRepositoryImpl struct {
 	db *database.DB
 }
 
-func NewTransactionRepository(db *database.DB) *TransactionRepository {
-	return &TransactionRepository{db: db}
+func NewTransactionRepository(db *database.DB) *TransactionRepositoryImpl {
+	return &TransactionRepositoryImpl{db: db}
 }
 
-func (r *TransactionRepository) CreateTransaction(ctx context.Context, fromUserID, toUserID uuid.UUID, toUser, fromUser string, amount int) error {
+type TransactionRepository interface {
+	CreateTransaction(ctx context.Context, fromUserID, toUserID uuid.UUID, toUser, fromUser string, amount int) error
+	GetTransactionsByUserID(ctx context.Context, userID uuid.UUID) ([]models.Transaction, error)
+}
+
+func (r *TransactionRepositoryImpl) CreateTransaction(ctx context.Context, fromUserID, toUserID uuid.UUID, toUser, fromUser string, amount int) error {
 	query := `
 		INSERT INTO transactions (from_user_id, from_user, to_user_id, to_user, amount, created_at)
 		VALUES ($1, $2, $3, $4, $5, NOW())
@@ -30,7 +35,7 @@ func (r *TransactionRepository) CreateTransaction(ctx context.Context, fromUserI
 	return nil
 }
 
-func (r *TransactionRepository) GetTransactionsByUserID(ctx context.Context, userID uuid.UUID) ([]models.Transaction, error) {
+func (r *TransactionRepositoryImpl) GetTransactionsByUserID(ctx context.Context, userID uuid.UUID) ([]models.Transaction, error) {
 	var transactions []models.Transaction
 	query := `
 		SELECT id, from_user, from_user_id, to_user, to_user_id, amount, created_at

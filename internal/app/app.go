@@ -35,8 +35,8 @@ func Run(cfg *config.Config) error {
 	// services
 	authService := services.NewAuthService(userRepo, cfg.JWTSecret, utils.DefaultAuthUtils{})
 	userService := services.NewUserService(userRepo)
-	transactionService := services.NewTransactionService(*transactionRepo, userRepo)
-	purchaseService := services.NewPurchaseService(*purchaseRepo, *merchRepo, userRepo)
+	transactionService := services.NewTransactionService(transactionRepo, userRepo)
+	purchaseService := services.NewPurchaseService(purchaseRepo, merchRepo, userRepo)
 
 	// handlers
 	authHandler := handlers.NewAuthHandler(*authService, *userService)

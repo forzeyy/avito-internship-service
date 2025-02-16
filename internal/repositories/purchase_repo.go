@@ -9,15 +9,20 @@ import (
 	"github.com/google/uuid"
 )
 
-type PurchaseRepository struct {
+type PurchaseRepositoryImpl struct {
 	db *database.DB
 }
 
-func NewPurchaseRepository(db *database.DB) *PurchaseRepository {
-	return &PurchaseRepository{db: db}
+func NewPurchaseRepository(db *database.DB) *PurchaseRepositoryImpl {
+	return &PurchaseRepositoryImpl{db: db}
 }
 
-func (r *PurchaseRepository) CreatePurchase(ctx context.Context, userID uuid.UUID, itemName string, quantity int) error {
+type PurchaseRepository interface {
+	CreatePurchase(ctx context.Context, userID uuid.UUID, itemName string, quantity int) error
+	GetPurchasesByUserID(ctx context.Context, userID uuid.UUID) ([]models.Purchase, error)
+}
+
+func (r *PurchaseRepositoryImpl) CreatePurchase(ctx context.Context, userID uuid.UUID, itemName string, quantity int) error {
 	query := `
 		INSERT INTO purchases (user_id, item_name, quantity, created_at)
 		VALUES ($1, $2, $3, NOW())
@@ -29,7 +34,7 @@ func (r *PurchaseRepository) CreatePurchase(ctx context.Context, userID uuid.UUI
 	return nil
 }
 
-func (r *PurchaseRepository) GetPurchasesByUserID(ctx context.Context, userID uuid.UUID) ([]models.Purchase, error) {
+func (r *PurchaseRepositoryImpl) GetPurchasesByUserID(ctx context.Context, userID uuid.UUID) ([]models.Purchase, error) {
 	var purchases []models.Purchase
 	query := `
 		SELECT id, user_id, item_name, quantity, created_at

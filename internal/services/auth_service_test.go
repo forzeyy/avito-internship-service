@@ -13,32 +13,7 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-type MockUserRepository struct {
-	mock.Mock
-}
 
-func (m *MockUserRepository) GetUserByID(ctx context.Context, id uuid.UUID) (*models.User, error) {
-	args := m.Called(ctx, id)
-	if args.Get(0) != nil {
-		return args.Get(0).(*models.User), args.Error(1)
-	}
-	return nil, args.Error(1)
-}
-
-func (m *MockUserRepository) GetUserByUsername(ctx context.Context, username string) (*models.User, error) {
-	args := m.Called(ctx, username)
-	return args.Get(0).(*models.User), args.Error(1)
-}
-
-func (m *MockUserRepository) CreateUser(ctx context.Context, user *models.User) error {
-	args := m.Called(ctx, user)
-	return args.Error(0)
-}
-
-func (m *MockUserRepository) UpdateUserBalance(ctx context.Context, userID uuid.UUID, amount int) error {
-	args := m.Called(ctx, userID, amount)
-	return args.Error(0)
-}
 
 type MockAuthUtils struct{}
 
@@ -51,7 +26,7 @@ func (m MockAuthUtils) GenerateAccessToken(userID uuid.UUID, secret string) (str
 }
 
 func TestAuthenticate_Success(t *testing.T) {
-	mockRepo := new(MockUserRepository)
+	mockRepo := new(MockUserRepo)
 	mockAuthUtil := MockAuthUtils{}
 
 	service := services.NewAuthService(mockRepo, "secret", mockAuthUtil)
@@ -68,7 +43,7 @@ func TestAuthenticate_Success(t *testing.T) {
 }
 
 func TestAuthenticate_InvalidCredentials(t *testing.T) {
-	mockRepo := new(MockUserRepository)
+	mockRepo := new(MockUserRepo)
 	mockAuthUtil := MockAuthUtils{}
 	service := services.NewAuthService(mockRepo, "secret", mockAuthUtil)
 
@@ -80,7 +55,7 @@ func TestAuthenticate_InvalidCredentials(t *testing.T) {
 }
 
 func TestRegister_Success(t *testing.T) {
-	mockRepo := new(MockUserRepository)
+	mockRepo := new(MockUserRepo)
 	mockAuthUtil := MockAuthUtils{}
 	service := services.NewAuthService(mockRepo, "secret", mockAuthUtil)
 
@@ -92,7 +67,7 @@ func TestRegister_Success(t *testing.T) {
 }
 
 func TestRegister_UserExists(t *testing.T) {
-	mockRepo := new(MockUserRepository)
+	mockRepo := new(MockUserRepo)
 	mockAuthUtil := MockAuthUtils{}
 	service := services.NewAuthService(mockRepo, "secret", mockAuthUtil)
 

@@ -9,15 +9,19 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-type MerchRepository struct {
+type MerchRepositoryImpl struct {
 	db *database.DB
 }
 
-func NewMerchRepository(db *database.DB) *MerchRepository {
-	return &MerchRepository{db: db}
+func NewMerchRepository(db *database.DB) *MerchRepositoryImpl {
+	return &MerchRepositoryImpl{db: db}
 }
 
-func (r *MerchRepository) GetItemPrice(ctx context.Context, itemName string) (int, error) {
+type MerchRepository interface {
+	GetItemPrice(ctx context.Context, itemName string) (int, error)
+}
+
+func (r *MerchRepositoryImpl) GetItemPrice(ctx context.Context, itemName string) (int, error) {
 	var price int
 	query := `SELECT price FROM merch WHERE name = $1`
 
